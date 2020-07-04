@@ -1,10 +1,28 @@
-language: python
-install: "pip install -r requirements.txt"
+language: java
+jdk :  oraclejdk9
+install: ./gradlew clean jar
 
-script:
-  # Run ANSIBLE checks
-  # - ANSIBLE0008: Disabled for use of sudo warnings - to address
-  # - ANSIBLE0011: Disabled for all tasks which should be named
-  # - ANSIBLE0012: Disabled (should not change if nothings needs doing) - to address
-  # - ANSIBLE0013: Disabled - few uses of shell commands - to address
-  - find vagrant/provision -name "*.yml" -exec ansible-lint -x ANSIBLE008,ANSIBLE0011,ANSIBLE0012,ANSIBLE0013  {} +
+env:
+- COVERAGE=0
+- COVERAGE=0.24
+- COVERAGE=0.25
+- COVERAGE=0.35
+- COVERAGE=0.5
+
+script: 
+ 
+- ./gradlew -p ./monolithic/ui check
+- ./gradlew -p ./monolithic/service/cart check
+- ./gradlew -p ./monolithic/service/user check
+
+- ./gradlew -p ./monolithic/repository/order check
+- ./gradlew -p ./monolithic/repository/cart check
+- ./gradlew -p ./monolithic/repository/product check
+- ./gradlew -p ./monolithic/repository/user check
+ 
+deploy:
+ provider: script
+ script: echo 'WFP'
+ on:
+   all_branches: true
+   
